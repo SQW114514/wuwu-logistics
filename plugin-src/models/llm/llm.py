@@ -37,9 +37,14 @@ from ..common_openai import _CommonOpenAI
 
 
 class CodexResponsesLargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
+    _KNOWN_PERFORMANCE_TIERS = {"medium", "high", "xhigh", "extra-high"}
+    _KNOWN_VERBOSITY_LEVELS = {"low", "medium", "high"}
     _TIER_SUFFIX_PATTERN = re.compile(
-        r"-(?:medium|high|xhigh)(?:-(?:medium|high|xhigh))?$",
+        r"-(?:medium|high|xhigh|extra-high)(?:-(?:medium|high|xhigh|extra-high))?$",
         re.IGNORECASE,
+    )
+    _MODEL_HAS_TIER_PATTERN = re.compile(
+        r"-(?:medium|high|xhigh|extra-high)$", re.IGNORECASE
     )
     _TIER_VALUE_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]{0,31}$")
 
@@ -245,11 +250,16 @@ class CodexResponsesLargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
         tier_value: Any,
         custom_tier_value: Any,
     ) -> str:
-        custom_tier = str(custom_tier_value or "").strip().lower().lstrip("-")
+        custom_tier = self._normalize_performance_tier(custom_tier_value)
         if custom_tier:
             tier = custom_tier
         else:
-            tier = str(tier_value or "auto").strip().lower()
+            tier = self._normalize_performance_tier(tier_value or "auto")
+
+        # If the model id already contains a tier suffix (for example
+        # gpt-5.3-codex-xhigh), preserve it unless a custom override is provided.
+        if self._MODEL_HAS_TIER_PATTERN.search(model) and not custom_tier:
+            return model
 
         if tier in {"", "auto"}:
             return model
@@ -258,6 +268,29 @@ class CodexResponsesLargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
 
         base_model = self._TIER_SUFFIX_PATTERN.sub("", model)
         return f"{base_model}-{tier}"
+
+    def _normalize_performance_tier(self, tier_value: Any) -> str:
+        tier = str(tier_value or "").strip().lower().lstrip("-")
+        if not tier:
+            return ""
+
+        # Keep the wire value compatible by mapping common "extra high" variants to "xhigh".
+        if tier in {"extrahigh", "extra_high", "extra high"}:
+            tier = "xhigh"
+
+        # Some UIs may accidentally pass "<tier>-<verbosity>" in a single field.
+        # Keep only the actual tier to avoid forcing "-medium".
+        #
+        # Note: performance tiers themselves may contain "-" (e.g. "extra-high"),
+        # so strip a known verbosity suffix instead of splitting on the first "-".
+        for verbosity in self._KNOWN_VERBOSITY_LEVELS:
+            suffix = f"-{verbosity}"
+            if tier.endswith(suffix):
+                candidate = tier[: -len(suffix)]
+                if candidate in self._KNOWN_PERFORMANCE_TIERS:
+                    return candidate
+
+        return tier
 
     def _convert_prompt_messages_to_responses_input(
         self,
