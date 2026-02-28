@@ -1,0 +1,77 @@
+model: gpt-5.2
+label:
+  en_US: gpt-5.2
+  zh_Hans: gpt-5.2
+model_type: llm
+features:
+  - multi-tool-call
+  - stream-tool-call
+  - agent-thought
+  - vision
+model_properties:
+  mode: chat
+  context_size: 400000
+parameter_rules:
+  - name: temperature
+    use_template: temperature
+  - name: top_p
+    use_template: top_p
+  - name: max_tokens
+    use_template: max_tokens
+    default: 8192
+    min: 1
+    max: 128000
+  - name: performance_tier
+    label:
+      en_US: Performance Tier
+      zh_Hans: 性能档位
+    type: string
+    required: false
+    default: auto
+    options:
+      - auto
+      - medium
+      - high
+      - xhigh
+  - name: custom_performance_tier
+    label:
+      en_US: Custom Performance Tier
+      zh_Hans: 自定义性能档位
+    type: string
+    required: false
+  - name: reasoning_effort
+    label:
+      en_US: Reasoning Effort
+      zh_Hans: 推理努力程度
+    type: string
+    required: false
+    default: none
+    options:
+      - none
+      - low
+      - medium
+      - high
+      - xhigh
+  - name: verbosity
+    label:
+      en_US: Verbosity
+      zh_Hans: 详细程度
+    type: string
+    required: false
+    default: medium
+    options:
+      - low
+      - medium
+      - high
+  - name: enable_stream
+    label:
+      en_US: Streaming
+      zh_Hans: 流式响应
+    type: boolean
+    required: true
+    default: true
+pricing:
+  input: "0"
+  output: "0"
+  unit: "0.000001"
+  currency: USD

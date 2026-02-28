@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Hamster">
+  <rect width="128" height="128" rx="24" fill="#111827"/>
+  <text
+    x="64"
+    y="89"
+    font-size="82"
+    text-anchor="middle"
+    font-family="Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif"
+  >
+    🐹
+  </text>
+</svg>

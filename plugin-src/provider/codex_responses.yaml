@@ -1,0 +1,82 @@
+provider: codex_responses
+label:
+  en_US: Wuwu Logistics
+  zh_Hans: 呜呜物流
+description:
+  en_US: Hamster plugin for OpenAI-compatible relay APIs over Responses.
+  zh_Hans: 一只可通过 OpenAI 兼容中转 API（Responses）接入模型的插件仓鼠。
+icon_small:
+  en_US: icon.svg
+  zh_Hans: icon.svg
+icon_large:
+  en_US: icon.svg
+  zh_Hans: icon.svg
+background: "#111827"
+help:
+  title:
+    en_US: Configure API key and base URL
+    zh_Hans: 配置 API Key 与 Base URL
+  url:
+    en_US: https://platform.openai.com/docs/api-reference/responses
+supported_model_types:
+  - llm
+configurate_methods:
+  - predefined-model
+  - customizable-model
+model_credential_schema:
+  model:
+    label:
+      en_US: Model Name
+      zh_Hans: 模型名称
+    placeholder:
+      en_US: Enter your model name
+      zh_Hans: 输入模型名称
+  credential_form_schemas:
+    - variable: codex_api_key
+      label:
+        en_US: API Key
+        zh_Hans: API Key
+      type: secret-input
+      required: true
+      placeholder:
+        en_US: Enter your API Key
+        zh_Hans: 输入 API Key
+    - variable: codex_api_base
+      label:
+        en_US: API Base
+        zh_Hans: API Base
+      type: text-input
+      required: true
+      placeholder:
+        en_US: Enter API Base exactly as required, e.g. https://your-host/codex or https://your-host/v1
+        zh_Hans: 按服务商要求填写 API Base，例如 https://your-host/codex 或 https://your-host/v1
+provider_credential_schema:
+  credential_form_schemas:
+    - variable: codex_api_key
+      label:
+        en_US: API Key
+        zh_Hans: API Key
+      type: secret-input
+      required: true
+      placeholder:
+        en_US: Enter your API Key
+        zh_Hans: 输入 API Key
+    - variable: codex_api_base
+      label:
+        en_US: API Base
+        zh_Hans: API Base
+      type: text-input
+      required: true
+      placeholder:
+        en_US: Enter API Base exactly as required, e.g. https://your-host/codex or https://your-host/v1
+        zh_Hans: 按服务商要求填写 API Base，例如 https://your-host/codex 或 https://your-host/v1
+models:
+  llm:
+    predefined:
+      - "models/llm/*.yaml"
+    position: "models/llm/_position.yaml"
+extra:
+  python:
+    provider_source: provider/codex_responses.py
+    model_sources:
+      - "models/llm/llm.py"
